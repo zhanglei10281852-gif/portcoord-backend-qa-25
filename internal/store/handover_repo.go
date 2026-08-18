@@ -85,7 +85,7 @@ func (s *SQLiteStore) ListHandovers(ctx context.Context, q domain.PageQuery) (do
 func (s *SQLiteStore) UpdateHandoverStatus(ctx context.Context, id string, status domain.HandoverStatus, version int) (int, error) {
 	ex := s.executor(ctx)
 	res, err := ex.Exec(`UPDATE handover_documents SET status = ?, version = version + 1, updated_at = ?
-		WHERE id = ?`, string(status), nowStamp(), id)
+		WHERE id = ? AND version = ?`, string(status), nowStamp(), id, version)
 	if err != nil {
 		return 0, fmt.Errorf("update handover status: %w", err)
 	}

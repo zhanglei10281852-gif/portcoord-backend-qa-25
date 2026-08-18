@@ -111,9 +111,7 @@ func (s *Service) Confirm(ctx context.Context, id, actor, requestID string) erro
 		return apperr.Wrap(apperr.CodeInternal, "get handover failed", err)
 	}
 	if h.Status != domain.HandoverStatusPending {
-		s.logger.Debug("handover confirmation replay", apperr.F("id", id))
-		h.Status = domain.HandoverStatusPending
-		h.Version++
+		return apperr.InvalidTransition("handover_document", string(h.Status), string(domain.HandoverStatusConfirmed))
 	}
 	affected, err := s.handovers.UpdateHandoverStatus(ctx, id, domain.HandoverStatusConfirmed, h.Version)
 	if err != nil {
